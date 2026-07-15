@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /ca/contacte/
+Disallow: /es/contacto/
+
+Sitemap: https://emanuelrocha.cat/sitemap.xml
