@@ -1,0 +1,789 @@
+        /* ==========================================================================
+           3. DESIGN TOKENS (Paleta de Color Fija y Control de Foco)
+           ========================================================================== */
+        :root {
+            /* Tonos Fijos de la Marca */
+            --text-main: #41403c;
+            --text-featured: #4f4749;
+
+            --font-editorial: 1.25rem;
+            
+            /* Inercias de Sistemas Premium (Apple Springs) */
+            --transition-apple: all 1.25s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-menu: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-snap: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            --transition-spring: all 0.75s cubic-bezier(0.25, 1.15, 0.5, 1);
+            
+            --welcome-height: 240px;
+            --gutter: 40px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            color-scheme: light;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9f5f2 0%, #dad2ce 100%);
+            color: var(--text-main);
+            font-family: 'Switzer', -apple-system, BlinkMacSystemFont, sans-serif;
+            height: 100dvh; 
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Contenedor principal limitado estrictamente al ancho de la retícula */
+        .app-container {
+            position: relative;
+            height: 100dvh; 
+            max-height: 100dvh;
+            width: 100%;
+            max-width: 38rem; 
+            margin: 0 auto;
+            padding: var(--gutter) 24px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* ==========================================================================
+           4. HEADER (Alineación Quirúrgica con Salida Rápida)
+           ========================================================================== */
+        .main-header {
+            width: 100%;
+            flex-shrink: 0;
+            opacity: 0;
+            pointer-events: none; 
+            transform: translateY(-8px);
+            z-index: 100;
+            
+            /* Salida rápida (Fast Exit) al volver a la pantalla de bienvenida */
+            will-change: transform, opacity;
+            transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        [data-state="narrative"] .main-header,
+        [data-state="contact"] .main-header,
+        [data-state="operations"] .main-header {
+            opacity: 0.47;
+            pointer-events: auto; 
+            transform: translateY(0);
+            
+            /* Entrada elegante en pantallas secundarias */
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                        transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* El hover solo se activa si estamos en una pantalla con la cabecera visible */
+        body[data-state="narrative"] .main-header:hover,
+        body[data-state="contact"] .main-header:hover,
+        body[data-state="operations"] .main-header:hover {
+            opacity: 1 !important;
+        }
+
+        .brand-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px; 
+            align-items: flex-start;
+        }
+
+        .brand-title {
+            appearance: none;
+            background: none;
+            border: 0;
+            font-family: inherit;
+            font-size: 1.1rem;
+            letter-spacing: -0.01em;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .brand-title:hover {
+            opacity: 0.6;
+        }
+
+        :where(button, a, input):focus-visible {
+            outline: 2px solid var(--text-main);
+            outline-offset: 4px;
+            border-radius: 2px;
+        }
+
+        .tag-line {
+            font-size: 12px; 
+            line-height: 20px; 
+            letter-spacing: 0.8px; 
+            text-transform: uppercase;
+            color: var(--text-featured);
+            font-weight: 500;
+        }
+
+        /* ==========================================================================
+           5. VISOR CENTRAL (Unificación Total de Vistas Planas)
+           ========================================================================== */
+        .content-viewport {
+            flex-grow: 1; 
+            flex-shrink: 1;
+            min-height: 0; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            position: relative;
+        }
+
+        body[data-state="contact"] .content-viewport,
+        body[data-state="operations"] .content-viewport {
+            justify-content: flex-start;
+            padding-top: 4vh;
+        }
+
+        .view-welcome,
+        .view-narrative,
+        .view-contact,
+        .view-operations {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            will-change: transform, opacity;
+        }
+
+        /* La pantalla base de bienvenida responde al desvanecimiento vertical unificado */
+        .view-welcome {
+            height: var(--welcome-height);
+            top: 50%;
+            transform: translateY(-50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 1.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* UNIFICACIÓN: En todos los estados secundarios, la bienvenida se disuelve y encoge igual */
+        body[data-state="narrative"] .view-welcome,
+        body[data-state="contact"] .view-welcome,
+        body[data-state="operations"] .view-welcome {
+            opacity: 0;
+            transform: translateY(-50%) scale(0.95);
+            pointer-events: none;
+        }
+
+        /* COREOGRAFÍA DE NODOS ASÍNCRONOS */
+        .axis-box {
+            position: absolute;
+            width: max-content; 
+            height: auto;
+            display: flex;
+            align-items: center;
+            transition: var(--transition-apple);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text-node {
+            font-size: var(--font-editorial);
+            line-height: 1.5;
+            letter-spacing: -0.02em;
+            font-weight: 800;
+            color: var(--text-main);
+            transition: opacity 0.25s ease, filter 0.25s ease;
+        }
+
+        #box-name { opacity: 1; filter: blur(0); }
+        #box-welcome { opacity: 0; filter: blur(15px); }
+
+        body[data-state="welcome-center"] #box-name { opacity: 0; filter: blur(15px); visibility: hidden; }
+        body[data-state="welcome-center"] #box-welcome { opacity: 1; filter: blur(0); }
+
+        body[data-state="welcome-left"] #box-name { opacity: 0; visibility: hidden; }
+        body[data-state="welcome-left"] #box-welcome {
+            left: 0; top: 50%;
+            transform: translate(0, -50%);
+            opacity: 1; filter: blur(0);
+        }
+
+        body[data-state="welcome-ready"] #box-name,
+        body[data-state="narrative"] #box-name,
+        body[data-state="contact"] #box-name,
+        body[data-state="operations"] #box-name { opacity: 0; visibility: hidden; }
+        
+        body[data-state="welcome-ready"] #box-welcome,
+        body[data-state="narrative"] #box-welcome,
+        body[data-state="contact"] #box-welcome,
+        body[data-state="operations"] #box-welcome {
+            top: 0; left: 0;
+            transform: translate(0, 0);
+            opacity: 1; filter: blur(0);
+        }
+
+        .welcome-fade-block {
+            width: 100%;
+            position: absolute;
+            top: 36px; 
+            left: 0;
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(10px);
+            transition: var(--transition-apple);
+            pointer-events: none;
+        }
+
+        body[data-state="welcome-ready"] .welcome-fade-block {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+            pointer-events: auto;
+            transition-delay: 0.35s; 
+        }
+
+        .interactive-prose {
+            font-size: var(--font-editorial);
+            line-height: 1.6;
+            color: var(--text-main);
+            opacity: 0.95; 
+            letter-spacing: -0.01em;
+            transition: opacity 0.25s ease, filter 0.25s ease;
+        }
+
+        .btn-inline-option {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 700;
+            color: var(--text-featured);
+            cursor: pointer;
+            display: inline;
+            padding: 0 1px;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-inline-option:hover { color: var(--text-main); }
+
+        /* Estilo de despliegue unificado para vistas secundarias */
+        .view-contact {
+            top: 0;
+            padding-top: 36px;
+            opacity: 0;
+            transform: scale(0.96) translateY(12px);
+            pointer-events: none;
+            transition: opacity 1.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+
+        body[data-state="contact"] .view-contact {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* UNIFICACIÓN ABSOLUTA: Operaciones ahora entra verticalmente, igual que Contacto */
+        .view-operations {
+            top: 0;
+            padding-top: 36px;
+            opacity: 0;
+            transform: scale(0.96) translateY(12px);
+            pointer-events: none;
+            transition: opacity 1.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .view-operations::-webkit-scrollbar { display: none; }
+
+        body[data-state="operations"] .view-operations {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Espaciado del Manifiesto de Operaciones */
+        #operations-intro {
+            margin-bottom: 28px;
+        }
+
+        /* ==========================================================================
+           6. DISPOSITIVO ESTANTERÍA / ARCHIVADOR (Cabinet Accordion System)
+           ========================================================================== */
+        .cabinet-system {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .folder-row {
+            width: 100%;
+            border-top: 1px solid rgba(65, 64, 60, 0.15); 
+            transition: background 0.3s ease;
+        }
+
+        .folder-row:last-child {
+            border-bottom: 1px solid rgba(65, 64, 60, 0.15);
+        }
+
+        .folder-header {
+            appearance: none;
+            background: none;
+            border: 0;
+            color: inherit;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            user-select: none;
+        }
+
+        .folder-num {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-featured);
+            opacity: 0.5;
+            width: 32px;
+        }
+
+        .folder-name {
+            flex-grow: 1;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+            padding-left: 8px;
+        }
+
+        .folder-status {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-featured);
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
+        }
+
+        .folder-row:hover .folder-status {
+            opacity: 0.8;
+        }
+
+        /* Cajón Elástico con Grid para Auto-Height Perfecto */
+        .folder-drawer {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+        }
+
+        .folder-row.is-open .folder-drawer {
+            grid-template-rows: 1fr;
+        }
+
+        .folder-content {
+            min-height: 0;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .folder-row.is-open .folder-content {
+            opacity: 1;
+            transform: translateY(0);
+            padding-bottom: 24px;
+            transition-delay: 0.1s;
+        }
+
+        .folder-content p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-main);
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .inspiration-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-featured);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            margin-right: 16px;
+            margin-top: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .inspiration-link:hover {
+            color: var(--text-main);
+        }
+
+        /* ==========================================================================
+           7. TELEPROMPTER NARRATIVO
+           ========================================================================== */
+        .view-narrative {
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateY(16px); 
+            pointer-events: none;
+            transition: opacity 1.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1); 
+            
+            overflow-y: scroll;
+            scrollbar-width: none;
+            scroll-snap-type: y mandatory;
+            
+            padding-top: 35vh; 
+            padding-bottom: 35vh;
+            
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #fff 15%, #fff 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #fff 15%, #fff 85%, transparent 100%);
+        }
+
+        body[data-state="narrative"] .view-narrative {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .view-narrative::-webkit-scrollbar { display: none; }
+
+        .scrolling-p, .image-box {
+            font-size: var(--font-editorial);
+            line-height: 1.55;
+            padding: 24px 0; 
+            margin: 0; 
+            scroll-snap-align: center;
+            scroll-snap-stop: always; 
+            opacity: 0.01;
+            filter: blur(1.75px);
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                        filter 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+        }
+
+        .scrolling-p.is-reading, .image-box.is-reading {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .inline-input {
+            background: none;
+            border: none;
+            border-bottom: 1px dashed rgba(65, 64, 60, 0.35);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 700;
+            color: var(--text-main);
+            padding: 0 4px;
+            outline: none;
+            width: 130px;
+            transition: border-color 0.3s ease;
+        }
+
+        .inline-input::placeholder { color: var(--text-featured); opacity: 0.4; font-weight: 400; }
+        .inline-input:focus { border-bottom-style: solid; border-bottom-color: var(--text-main); }
+        #form-email { width: 185px; }
+
+        .form-choice-btn {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 400;
+            color: var(--text-main);
+            opacity: 0.22;
+            cursor: pointer;
+            transition: opacity 0.3s ease, font-weight 0.3s ease;
+            padding: 0 2px;
+        }
+
+        .form-choice-btn.is-active { opacity: 1; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+        .form-slash { opacity: 0.22; padding: 0 4px; font-weight: 400; }
+        #form-dynamic-tail { transition: opacity 0.25s ease; opacity: 1; }
+
+        .contact-form { display: contents; }
+
+        .form-status {
+            display: block;
+            min-height: 1.5em;
+            margin-top: 18px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .form-status[data-kind="error"] { color: #702b31; }
+        .form-status[data-kind="success"] { color: #2f5841; }
+
+        .input-error {
+            animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            border-bottom-color: #4f4749 !important;
+            border-bottom-style: solid;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+            40%, 60% { transform: translate3d(3px, 0, 0); }
+        }
+
+        /* ==========================================================================
+           8. FOOTER & SELECTOR DE IDIOMA INLINE (Morphing In-Place sin Jitter)
+           ========================================================================== */
+        .main-footer {
+            width: 100%;
+            height: 48px; 
+            flex-shrink: 0; 
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.2fr; 
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none; 
+            transform: translateY(8px);
+            transition: opacity 1.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body[data-state="welcome-ready"] .main-footer,
+        body[data-state="narrative"] .main-footer,
+        body[data-state="contact"] .main-footer,
+        body[data-state="operations"] .main-footer {
+            opacity: 0.47;
+            pointer-events: auto; 
+            transform: translateY(0);
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                        transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Bloqueo del hover mediante la clase de descanso temporal */
+        .main-footer:not(.footer-resting):hover { opacity: 1 !important; }
+
+        /* Mantenemos el brillo encendido al 100% únicamente si el selector está abierto */
+        .main-footer:has(.lang-selector-inline.is-open) { opacity: 1 !important; }
+
+        /* Clase de bloqueo temporal por hardware */
+        .main-footer.footer-resting {
+            pointer-events: none !important; 
+        }
+
+        .footer-col-left { display: flex; justify-content: flex-start; }
+        .footer-col-center { display: flex; justify-content: center; }
+        .footer-col-right { display: flex; justify-content: flex-end; }
+
+        .meta-text {
+            font-size: 12px; 
+            line-height: 20px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-main);
+            background: none;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 14px 12px; 
+            display: inline-block;
+            will-change: transform, letter-spacing;
+            transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.1s ease;
+        }
+
+        .meta-text:hover { color: var(--text-featured); letter-spacing: 1.4px; }
+        .meta-text:active { transform: scale(0.96); }
+
+        .footer-col-left #btn-contact,
+        .footer-col-left #btn-back { padding-left: 0; transform-origin: left center; }
+        .footer-col-center #btn-operations-footer { transform-origin: center center; }
+        
+        /* Contenedor estático calibrado. Protege los márgenes exteriores */
+        .lang-selector-inline {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            height: 48px;
+            width: 110px; 
+        }
+
+        #lang-toggle {
+            position: absolute;
+            right: 0;
+            padding-right: 0; 
+            transform-origin: right center;
+            will-change: transform, opacity;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lang-options-slide {
+            position: absolute;
+            right: 0;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(8px);
+            pointer-events: none;
+            will-change: transform, opacity;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lang-selector-inline.is-open #lang-toggle {
+            opacity: 0;
+            transform: translateX(-8px);
+            pointer-events: none;
+        }
+
+        .lang-selector-inline.is-open .lang-options-slide {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .lang-divider-dot {
+            font-size: 11px;
+            opacity: 0.25;
+            color: var(--text-main);
+            padding: 0 4px;
+            user-select: none;
+        }
+
+        .lang-opt { padding: 14px 6px !important; }
+
+        .lang-opt.is-active {
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* CONTROL DE VISIBILIDAD DE ESTADOS */
+        #btn-back, #btn-cancel-contact { display: none; }
+
+        body[data-state="narrative"] #btn-contact { display: none; }
+        body[data-state="narrative"] #btn-back { display: block; }
+
+        /* El botón "Contacte" muta correctamente a "Enviar" sin desaparecer */
+        body[data-state="contact"] #btn-contact { display: block; } 
+        body[data-state="contact"] #btn-back { display: none; }
+        body[data-state="contact"] #btn-operations-footer { opacity: 0; pointer-events: none; }
+        body[data-state="contact"] #lang-inline-container { display: none; }
+        body[data-state="contact"] #btn-cancel-contact { display: block; }
+
+        body[data-state="operations"] #btn-contact { display: none; }
+        body[data-state="operations"] #btn-back { display: block; }
+        body[data-state="operations"] #btn-operations-footer { opacity: 0; pointer-events: none; }
+        body[data-state="operations"] #lang-inline-container { display: none; }
+
+        /* ==========================================================================
+           9. CALIBRACIÓN DE RELEVO TIPOGRÁFICO (Ink Swap Physics)
+           ========================================================================== */
+        @keyframes inkEvaporate {
+            0% { opacity: 1; filter: blur(0px); transform: scale(1); }
+            100% { opacity: 0; filter: blur(4px); transform: scale(0.99); }
+        }
+        @keyframes inkMaterialize {
+            0% { opacity: 0; filter: blur(4px); transform: scale(0.99); }
+            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+        }
+
+        /* Clases de estado de transición controladas por GPU */
+        .lang-evaporating {
+            animation: inkEvaporate 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        }
+        .lang-materializing {
+            animation: inkMaterialize 0.42s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+
+        /* ==========================================================================
+           10. RESPONSIVE DESKTOP 
+           ========================================================================== */
+        @media (min-width: 768px) {
+            :root {
+                --gutter: 32px;
+                --welcome-height: 180px;
+                --font-editorial: 1.55rem;
+            }
+            .app-container { padding: var(--gutter) 0; } 
+            .content-viewport { max-height: 440px; }
+            .welcome-fade-block { top: 46px; }
+            body[data-state="contact"] .content-viewport,
+            body[data-state="operations"] .content-viewport { padding-top: 0; justify-content: center; }
+
+            .view-contact, .view-operations { padding-top: 0; }
+            .inline-input { width: 170px; }
+            #form-email { width: 240px; }
+            
+            body[data-state="welcome-left"] #box-welcome { top: 50%; left: 0; transform: translate(0, -50%); }
+            body[data-state="welcome-ready"] #box-welcome,
+            body[data-state="narrative"] #box-welcome,
+            body[data-state="contact"] #box-welcome,
+            body[data-state="operations"] #box-welcome { top: 0; left: 0; transform: translate(0, 0); }
+
+            .scrolling-p { padding: 32px 0; }
+            .main-footer { height: 40px; }
+            .main-footer .meta-text { padding: 10px 12px; }
+            .main-footer .footer-col-left .meta-text { padding-left: 0; }
+            .main-footer .footer-col-right .meta-text { padding-right: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .scrolling-p, .image-box { filter: blur(1.75px); }
+            .scrolling-p.is-reading, .image-box.is-reading { filter: blur(0); }
+
+            /* El cambio de idioma conserva su relevo visual incluso si el sistema
+               reduce el resto de movimientos de interfaz. */
+            .lang-evaporating {
+                animation: inkEvaporate 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+            }
+            .lang-materializing {
+                animation: inkMaterialize 0.42s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+            }
+        }
