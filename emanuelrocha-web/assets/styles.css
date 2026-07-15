@@ -505,6 +505,16 @@
             filter: blur(0);
         }
 
+        /* Avance del siguiente bloque: deja entrever su arranque en el borde
+           inferior sin hacer legible todo el contenido periférico. */
+        .scrolling-p.is-reading + .scrolling-p:not(.is-reading),
+        .scrolling-p.is-reading + .image-box:not(.is-reading),
+        .image-box.is-reading + .scrolling-p:not(.is-reading),
+        .image-box.is-reading + .image-box:not(.is-reading) {
+            opacity: 0.16;
+            filter: blur(1.15px);
+        }
+
         .inline-input {
             background: none;
             border: none;
